@@ -72,6 +72,7 @@ public:
 		std::ifstream in_file_map(filename.c_str(),std::ifstream::in);
 		// Return if we can't open the file.
 		if (!in_file_map) {
+      std::cout << "Return false" << "\n";
 			return false;
 		}
 
@@ -79,6 +80,7 @@ public:
 		std::string line_map;
 
 		//run over each single line:
+    std::cout << "About to print landmark info" << "\n";
 		while(getline(in_file_map, line_map)){
 
 			std::istringstream iss_map(line_map);
