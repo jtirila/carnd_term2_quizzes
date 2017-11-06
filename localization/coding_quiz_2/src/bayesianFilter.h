@@ -30,13 +30,14 @@ public:
 
 	//member public: belief of state x:
 	std::vector<float> bel_x ;
+	std::vector<float> bel_x_init;
 
 private:
 
 /////private members:
 
   bool is_initialized_;
-	float control_std_;
+	float control_std;
 };
 
 #endif /* BAYESIANFILTER_H_ */
