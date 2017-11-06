@@ -46,11 +46,11 @@ int main() {
 	helper.read_map_data("data/map_1d.txt", map_1d);
 
 	//define file name of controls:
-	sprintf(in_file_name_ctr, "data/example%s/control_data.txt", 
+	sprintf(in_file_name_ctr, "data/example%s/control_data.txt",
 			example_string.c_str());
 
 	//define file name of observations:
-	sprintf(in_file_name_obs, "data/example%s/observations/", 
+	sprintf(in_file_name_obs, "data/example%s/observations/",
 			example_string.c_str());
 	
 	//read in data to measurement package list:

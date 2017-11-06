@@ -35,10 +35,8 @@ private:
 
 /////private members:
 
-	////////////////
-    //Add members!//
-    ////////////////
-
+  bool is_initialized_;
+	float control_std_;
 };
 
 #endif /* BAYESIANFILTER_H_ */
