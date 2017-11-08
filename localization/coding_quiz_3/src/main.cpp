@@ -23,7 +23,7 @@ int main() {
 	 *****************************************************************************/
 	
 	//define example: 01, 02, 03, 04
-	string example_string = "04";
+	string example_string = "03";
 
 	//declare map:
 	map map_1d;
@@ -64,6 +64,7 @@ int main() {
 
 	//create instance of 1d_bayesian localization filter:
 	bayesianFilter localization_1d_bayesian;
+  std::cout << "Constructor finished successfully\n";
 
 	//define number of time steps:
 	size_t T = measurement_pack_list.size();

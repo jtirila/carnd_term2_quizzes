@@ -8,6 +8,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ bayesianFilter::bayesianFilter() {
 	
 	//TODO: set up standard deviation of observations
 	// set as 1.0f, and include in header file
-	//observation_std =
+	observation_std = 1.0f;
 
 	//define size of different state vectors:
 	bel_x.resize(100,0);
@@ -39,6 +40,7 @@ bayesianFilter::~bayesianFilter() {
 void bayesianFilter::process_measurement(const MeasurementPackage &measurements,
         						             const map &map_1d,
                                          help_functions &helpers){
+
 
 	/******************************************************************************
 	 *  Set init belief of state vector:
@@ -66,12 +68,12 @@ void bayesianFilter::process_measurement(const MeasurementPackage &measurements,
 			} //end if
 		}//end for
 
-	//normalize belief at time 0:
-	bel_x_init = helpers.normalize_vector(bel_x_init);
+    //normalize belief at time 0:
+    bel_x_init = helpers.normalize_vector(bel_x_init);
 
-	//set initial flag to true:
-	is_initialized_ = true ;
-	
+    //set initial flag to true:
+    is_initialized_ = true ;
+
 	}//end if
 
 
@@ -84,9 +86,10 @@ void bayesianFilter::process_measurement(const MeasurementPackage &measurements,
 	MeasurementPackage::control_s     controls = measurements.control_s_;
 	MeasurementPackage::observation_s observations = measurements.observation_s_;
 
-	//run over the whole state (index represents the pose in x!):
-	for (unsigned int i=0; i< bel_x.size(); ++i){
 
+	//run over the whole state (index represents the pose in x!):
+	for (unsigned int i=0; i < bel_x.size(); ++i){
+  // for (unsigned int i=0; i< 1; ++i){
 
 		float pose_i = float(i) ;
 		/**************************************************************************
@@ -108,7 +111,7 @@ void bayesianFilter::process_measurement(const MeasurementPackage &measurements,
                     								controls.delta_x_f,
                     								control_std) ;
 			//motion model:
-			posterior_motion += transition_prob*bel_x_init[j];
+			posterior_motion += transition_prob * bel_x_init[j];
 		}
 
 		/**************************************************************************
@@ -121,28 +124,35 @@ void bayesianFilter::process_measurement(const MeasurementPackage &measurements,
 		float distance_max = 100;
 			
 		//loop over number of landmarks and estimate pseudo ranges:
-		//for (unsigned int l=0; l< ...){
+		for (unsigned int l=0; l < map_1d.landmark_list.size(); l++) {
 
-			//calculate difference between landmark position
+			// calculate difference between landmark position
 			// and current believe state index
-			//float range_l = 
+			float range_l = map_1d.landmark_list[l].x_f - i;
 			
 			//check, if distances are positive, and store positive range: 
-			//if(...)
-			//pseudo_ranges.push_back(....) ;
-		//}
+			if(range_l > 0)
+        pseudo_ranges.push_back(range_l);
+		}
 
-		//sort pseudo range vector:
-		//sort(pseudo_ranges.begin(), pseudo_ranges.end());
+		// sort pseudo range vector:
+		sort(pseudo_ranges.begin(), pseudo_ranges.end());
 
-		//define observation posterior:
+		// define observation posterior:
 		float posterior_obs = 1.0f ;
 		
-		//run over current observations vector defined above:
-		//for (unsigned int z=0; z< ....){
+		// run over current observations vector defined above:
+		for (unsigned int z=0; z < measurements.observation_s_.distance_f.size(); z++) {
 
-			//define min distance:
-			
+			// define min distance:
+      float min_distance;
+			if(pseudo_ranges.size() > 0)
+        min_distance = pseudo_ranges[z] - measurements.observation_s_.distance_f[z];
+			else
+			  min_distance = distance_max;
+
+      min_distance = min_distance * pow(-1, min_distance < 0);
+
 			// TODO: set min distance either to the closet landmark
 			// or if no landmarks exist to the maximum set distance
 
@@ -150,18 +160,18 @@ void bayesianFilter::process_measurement(const MeasurementPackage &measurements,
 			//estimate the posterior for observation model: 
 			// MULTIPLY by normpdf of obseravations distance, 
 			// min distance, and obseravtion_std
-			//posterior_obs*= 
-		//}
-		
+			posterior_obs *= helpers.normpdf(min_distance, 0,  observation_std);
+		}
 		//TODO: MULTIPLY motion_model by observation_update
-		bel_x[i] = posterior_motion;
+		bel_x[i] = posterior_motion * posterior_obs;
 
 
 	};
 	
-		//normalize:
-		bel_x = helpers.normalize_vector(bel_x);
+  //normalize:
+  bel_x = helpers.normalize_vector(bel_x);
+  for(int y = 0; y < bel_x.size(); y++)
 
-		///set bel_x to bel_init:
-		bel_x_init = bel_x;
+  ///set bel_x to bel_init:
+  bel_x_init = bel_x;
 };

@@ -73,9 +73,9 @@ void bayesianFilter::process_measurement(const MeasurementPackage &measurements,
     bel_x_init = helpers.normalize_vector(bel_x_init);
     is_initialized_ = true;
 
-    // DEBUG:
-    // for(int i = 0; i < bel_x_init.size(); i++)
-    //   std::cout << "Straight after initialization bel[" << i << "]: " << bel_x_init[i] << "\n";
+    DEBUG:
+    for(int i = 0; i < bel_x_init.size(); i++)
+      std::cout << "Straight after initialization bel[" << i << "]: " << bel_x_init[i] << "\n";
 
   }
 

@@ -39,6 +39,9 @@ private:
 	bool is_initialized_;
 
 	//precision of control information:
+	float observation_std ;
+
+	//precision of control information:
 	float control_std ;
 
 	//initial belief of state x:
