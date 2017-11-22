@@ -16,6 +16,8 @@
 
 import random
 import numpy as np
+import matplotlib
+matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
 
@@ -139,13 +141,37 @@ def run(robot, params, n=100, speed=1.0):
 
 
 # Make this tolerance bigger if you are timing out!
-def twiddle(tol=0.2):
+def twiddle(tol=1e-20):
     # Don't forget to call `make_robot` before every call of `run`!
     p = [0, 0, 0]
-    dp = [1, 1, 1]
+    dp = [2, 2, 2]
     robot = make_robot()
     x_trajectory, y_trajectory, best_err = run(robot, p)
     # TODO: twiddle loop here
+
+    while sum(dp) > tol:
+        print("Best err so far: {}".format(best_err))
+        print("sum(dp): {}".format(sum(dp)))
+        robot = make_robot()
+        for n in range(len(p)):
+            p[n] += dp[n]
+            x_traj, y_traj, err = run(robot, p)
+            if err < best_err:
+                best_err = err
+                dp[n] *= 2
+            else:
+                robot = make_robot()
+                p[n] -= 2 * dp[n]
+                x_traj, y_traj, err = run(robot, p)
+                if err < best_err:
+                    best_err = err
+                    dp[n] *= 2
+                else:
+                    p[n] += dp[n]
+                    dp[n] *= 0.5
+
+
+
 
     return p, best_err
 
