@@ -117,12 +117,14 @@ def run_p(robot, tau, n=100, speed=1.0):
     return x_trajectory, y_trajectory
     
 robot = Robot()
+# steering = -tau_p * CTE - tau_d * diff_CTE - tau_i * int_CTE
 robot.set(0, 1, 0)
 
 def run(robot, tau_p, tau_d, n=100, speed=1.0):
     x_trajectory = []
     y_trajectory = []
     prev_cte = robot.y
+    robot.set_steering_drift(10.0 / 180.0 * np.pi)
     for n in range(n): 
         cte = robot.y
         y_change = cte - prev_cte
